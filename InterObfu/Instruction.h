@@ -9,6 +9,11 @@
 
 struct Instruction
 {
+    Instruction()
+    {
+        memset(this, 0, sizeof(Instruction));
+    }
+
     Opcode opcode;
 
     Value<int> opCount;

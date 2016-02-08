@@ -14,6 +14,8 @@ struct Segment
         Fs,
         Gs
     };
+
+    Segments seg;
 };
 
 #endif //SEGMENT_H

@@ -3,7 +3,7 @@
 
 struct Register
 {
-    enum Registers
+    enum Registers //temporary
     {
         Invalid,
         Eax,
