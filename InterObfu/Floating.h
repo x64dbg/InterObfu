@@ -3,6 +3,6 @@
 
 #include "Value.h"
 
-typedef Value<double> Floating; //temporary
+typedef Value<double> Floating;
 
 #endif //FLOATING_H

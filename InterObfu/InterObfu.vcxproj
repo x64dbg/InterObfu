@@ -123,6 +123,7 @@
     <ClInclude Include="Operand.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Segment.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Value.h" />
   </ItemGroup>
   <ItemGroup>
