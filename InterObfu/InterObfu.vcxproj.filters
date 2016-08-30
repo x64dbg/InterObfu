@@ -26,9 +26,6 @@
     <ClInclude Include="Immediate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Floating.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>

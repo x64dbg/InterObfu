@@ -4,7 +4,6 @@
 #include "Utils.h"
 #include "Register.h"
 #include "Immediate.h"
-#include "Floating.h"
 #include "Memory.h"
 
 struct Operand
@@ -14,14 +13,12 @@ struct Operand
         Invalid,
         Reg,
         Imm,
-        Fpu,
         Mem
     };
 
     Types type;
     Register reg;
     Immediate imm;
-    Floating fpu;
     Memory mem;
 
     explicit Operand()
@@ -37,10 +34,6 @@ struct Operand
     explicit Operand(const Immediate & imm)
         : type(Imm),
         imm(imm) { }
-
-    explicit Operand(const Floating & fpu)
-        : type(Fpu),
-        fpu(fpu) { }
 
     explicit Operand(const Memory & mem)
         : type(Mem),
@@ -58,8 +51,6 @@ struct Operand
             return reg == other.reg;
         case Imm:
             return imm == other.imm;
-        case Fpu:
-            return fpu == other.fpu;
         case Mem:
             return mem == other.mem;
         default:
