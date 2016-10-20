@@ -6,20 +6,16 @@
 struct Value
 {
     int64_t val;
-    CompareFunction<Value> compare;
-
-    explicit Value(int64_t val, CompareFunction<Value> compare)
-        : val(val),
-          compare(compare) { }
-
-    explicit Value(int64_t val)
-        : Value(val, nullptr) { }
-
-    explicit Value(CompareFunction<Value> compare)
-        : Value(0, compare) { }
+    CompareFunction<Value> compare = nullptr;
 
     explicit Value()
-        : Value(0) { }
+        : val(0) { }
+
+    explicit Value(CompareFunction<Value> compare)
+        : val(0), compare(compare) { }
+
+    explicit Value(int64_t val)
+        : val(val) { }
 
     bool operator==(const Value & other) const
     {

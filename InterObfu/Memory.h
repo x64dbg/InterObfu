@@ -11,7 +11,12 @@ struct Memory
     Value scale; //TODO: is this the right way?
     Value disp;
 
+    CompareFunction<Memory> compare = nullptr;
+
     explicit Memory() { }
+
+    explicit Memory(CompareFunction<Memory> compare)
+        : compare(compare) { }
 
     explicit Memory(Segment seg, Register base, Register index, Value scale, Value disp)
         : seg(seg),
@@ -28,6 +33,11 @@ struct Memory
 
     bool operator==(const Memory & other) const
     {
+        if(compare)
+            return compare(*this, other);
+        if(other.compare)
+            return other.compare(other, *this);
+
         return seg == other.seg &&
                base == other.base &&
                index == other.index &&

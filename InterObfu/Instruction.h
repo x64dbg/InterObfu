@@ -21,8 +21,13 @@ struct Instruction
     uint8_t bytes[16];
     uint64_t eflags = 0;
 
+    CompareFunction<Instruction> compare = nullptr;
+
     explicit Instruction()
         : opCount(0) { }
+
+    explicit Instruction(CompareFunction<Instruction> compare)
+        : opCount(0), compare(compare) { }
 
     explicit Instruction(Opcode::Mnemonics mnem, int opCount = 0)
         : opcode(mnem),
@@ -34,7 +39,7 @@ struct Instruction
         operands[0] = op1;
         operands[1] = op2;
         operands[2] = op3;
-        operands[4] = op4;
+        operands[3] = op4;
     }
 
     explicit Instruction(Opcode::Mnemonics mnem, Operand op1, Operand op2, Operand op3)
@@ -78,6 +83,11 @@ struct Instruction
 
     bool operator==(const Instruction & other) const
     {
+        if(compare)
+            return compare(*this, other);
+        if(other.compare)
+            return other.compare(other, *this);
+
         if(opCount != other.opCount)
             return false;
         for(auto i = 0; i < opCount; i++)

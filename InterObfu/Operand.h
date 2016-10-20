@@ -23,8 +23,13 @@ struct Operand
     uint8_t access = 0;
     uint8_t size = 0;
 
+    CompareFunction<Operand> compare = nullptr;
+
     explicit Operand()
         : type(Invalid) { }
+
+    explicit Operand(CompareFunction<Operand> compare)
+        : type(Invalid), compare(compare) { }
 
     explicit Operand(const Register & reg)
         : type(Reg),
@@ -43,6 +48,11 @@ struct Operand
 
     bool operator==(const Operand & other) const
     {
+        if(compare)
+            return compare(*this, other);
+        if(other.compare)
+            return other.compare(other, *this);
+
         if(type != other.type)
             return false;
         switch(type)

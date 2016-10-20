@@ -60,16 +60,28 @@ struct Register
 
     Registers reg;
 
+    CompareFunction<Register> compare = nullptr;
+
+    explicit Register()
+        : reg(INVALID) { }
+
+    explicit Register(CompareFunction<Register> compare)
+        : reg(INVALID), compare(compare) { }
+
     explicit Register(Registers reg)
         : reg(reg) { }
 
-    explicit Register()
-        : Register(INVALID) { }
-
     bool operator==(const Register & other) const
     {
+        if(compare)
+            return compare(*this, other);
+        if(other.compare)
+            return other.compare(other, *this);
+
         return reg == other.reg;
     }
+
+    OPNEQ(Register);
 
     int Size() const
     {
@@ -166,6 +178,4 @@ struct Register
             return 0;
         }
     }
-
-    OPNEQ(Register);
 };
