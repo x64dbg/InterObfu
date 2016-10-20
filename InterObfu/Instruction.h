@@ -11,13 +11,15 @@ struct Instruction
 
     int opCount;
     Operand operands[4];
-    
+
     std::vector<Register> regs_read;
     std::vector<Register> regs_written;
+    std::vector<uint8_t> groups;
     uint8_t prefix[4];
     uint64_t address = 0;
     uint16_t size = 0;
     uint8_t bytes[16];
+    uint64_t eflags = 0;
 
     explicit Instruction()
         : opCount(0) { }

@@ -19,8 +19,9 @@ struct Operand
     Register reg;
     Value imm;
     Memory mem;
-    uint8_t access;
-    uint8_t size;
+
+    uint8_t access = 0;
+    uint8_t size = 0;
 
     explicit Operand()
         : type(Invalid) { }
