@@ -19,30 +19,32 @@ struct Operand
     Register reg;
     Value imm;
     Memory mem;
+    uint8_t access;
+    uint8_t size;
 
     explicit Operand()
         : type(Invalid) { }
 
     explicit Operand(const Register & reg)
         : type(Reg),
-        reg(reg) { }
+          reg(reg) { }
 
     explicit Operand(Register::Registers reg)
         : Operand(Register(reg)) { }
 
     explicit Operand(const Value & imm)
         : type(Imm),
-        imm(imm) { }
+          imm(imm) { }
 
     explicit Operand(const Memory & mem)
         : type(Mem),
-        mem(mem) { }
+          mem(mem) { }
 
     bool operator==(const Operand & other) const
     {
-        if (type != other.type)
+        if(type != other.type)
             return false;
-        switch (type)
+        switch(type)
         {
         case Invalid:
             return true;

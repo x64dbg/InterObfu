@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <vector>
 
 template<typename T>
 using CompareFunction = std::function<bool(const T &, const T &)>;

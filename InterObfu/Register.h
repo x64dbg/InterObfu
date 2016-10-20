@@ -64,7 +64,7 @@ struct Register
         : reg(reg) { }
 
     explicit Register()
-        : Register(INVALID) { }    
+        : Register(INVALID) { }
 
     bool operator==(const Register & other) const
     {

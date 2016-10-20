@@ -11,13 +11,20 @@ struct Instruction
 
     int opCount;
     Operand operands[4];
+    
+    std::vector<Register> regs_read;
+    std::vector<Register> regs_written;
+    uint8_t prefix[4];
+    uint64_t address = 0;
+    uint16_t size = 0;
+    uint8_t bytes[16];
 
     explicit Instruction()
         : opCount(0) { }
 
     explicit Instruction(Opcode::Mnemonics mnem, int opCount = 0)
         : opcode(mnem),
-        opCount(opCount) { }
+          opCount(opCount) { }
 
     explicit Instruction(Opcode::Mnemonics mnem, Operand op1, Operand op2, Operand op3, Operand op4)
         : Instruction(mnem, 4)
@@ -52,7 +59,7 @@ struct Instruction
     Operand & operator[](size_t index)
     {
 #ifdef _DEBUG
-        if (index >= _countof(operands))
+        if(index >= _countof(operands) || index >= opCount)
             __debugbreak();
 #endif //_DEBUG
         return operands[index];
@@ -61,7 +68,7 @@ struct Instruction
     const Operand & operator[](size_t index) const
     {
 #ifdef _DEBUG
-        if (index >= _countof(operands))
+        if(index >= _countof(operands) || index >= opCount)
             __debugbreak();
 #endif //_DEBUG
         return operands[index];
@@ -69,10 +76,10 @@ struct Instruction
 
     bool operator==(const Instruction & other) const
     {
-        if (opCount != other.opCount)
+        if(opCount != other.opCount)
             return false;
-        for (auto i = 0; i < opCount; i++)
-            if (operands[i] != other.operands[i])
+        for(auto i = 0; i < opCount; i++)
+            if(operands[i] != other.operands[i])
                 return false;
         return true;
     }

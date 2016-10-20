@@ -15,10 +15,10 @@ struct Memory
 
     explicit Memory(Segment seg, Register base, Register index, Value scale, Value disp)
         : seg(seg),
-        base(base),
-        index(index),
-        scale(scale),
-        disp(disp) { }
+          base(base),
+          index(index),
+          scale(scale),
+          disp(disp) { }
 
     explicit Memory(Register base, Register index, Value scale, Value disp)
         : Memory(Segment(), base, index, scale, disp) { }
@@ -29,10 +29,10 @@ struct Memory
     bool operator==(const Memory & other) const
     {
         return seg == other.seg &&
-            base == other.base &&
-            index == other.index &&
-            scale == other.scale &&
-            disp == other.disp;
+               base == other.base &&
+               index == other.index &&
+               scale == other.scale &&
+               disp == other.disp;
     }
 
     OPNEQ(Memory);
