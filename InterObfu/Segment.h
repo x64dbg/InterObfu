@@ -1,5 +1,4 @@
-#ifndef SEGMENT_H
-#define SEGMENT_H
+#pragma once
 
 #include "Register.h"
 #include "Utils.h"
@@ -9,12 +8,12 @@ struct Segment
     enum Segments
     {
         Invalid,
-        Cs,
-        Ss,
-        Ds,
-        Es,
-        Fs,
-        Gs
+        CS,
+        SS,
+        DS,
+        ES,
+        FS,
+        GS
     };
 
     Segments seg;
@@ -29,5 +28,3 @@ struct Segment
 
     OPNEQ(Segment);
 };
-
-#endif //SEGMENT_H

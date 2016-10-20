@@ -1,26 +1,25 @@
-#ifndef VALUE_H
-#define VALUE_H
+#pragma once
 
+#include <stdint.h>
 #include "Utils.h"
 
-template<typename T>
 struct Value
 {
-    T val;
-    CompareFunction<Value<T>> compare;
+    int64_t val;
+    CompareFunction<Value> compare;
 
-    explicit Value(T val, CompareFunction<Value> compare)
+    explicit Value(int64_t val, CompareFunction<Value> compare)
         : val(val),
         compare(compare) { }
 
-    explicit Value(T val)
+    explicit Value(int64_t val)
         : Value(val, nullptr) { }
 
     explicit Value(CompareFunction<Value> compare)
-        : Value(T(), compare) { }
+        : Value(0, compare) { }
 
     explicit Value()
-        : Value(T()) { }
+        : Value(0) { }
 
     bool operator==(const Value & other) const
     {
@@ -34,5 +33,3 @@ struct Value
 
     OPNEQ(Value);
 };
-
-#endif //VALUE_H

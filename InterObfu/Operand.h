@@ -1,9 +1,8 @@
-#ifndef OPERAND_H
-#define OPERAND_H
+#pragma once
 
 #include "Utils.h"
 #include "Register.h"
-#include "Immediate.h"
+#include "Value.h"
 #include "Memory.h"
 
 struct Operand
@@ -18,7 +17,7 @@ struct Operand
 
     Types type;
     Register reg;
-    Immediate imm;
+    Value imm;
     Memory mem;
 
     explicit Operand()
@@ -31,7 +30,7 @@ struct Operand
     explicit Operand(Register::Registers reg)
         : Operand(Register(reg)) { }
 
-    explicit Operand(const Immediate & imm)
+    explicit Operand(const Value & imm)
         : type(Imm),
         imm(imm) { }
 
@@ -60,5 +59,3 @@ struct Operand
 
     OPNEQ(Operand);
 };
-
-#endif //OPERAND_H

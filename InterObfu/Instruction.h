@@ -1,5 +1,4 @@
-#ifndef INSTRUCTION_H
-#define INSTRUCTION_H
+#pragma once
 
 #include "Utils.h"
 #include "Opcode.h"
@@ -80,5 +79,3 @@ struct Instruction
 
     OPNEQ(Instruction);
 };
-
-#endif //INSTRUCTION_H

@@ -1,5 +1,4 @@
-#ifndef REGISTER_H
-#define REGISTER_H
+#pragma once
 
 #include "Utils.h"
 
@@ -72,7 +71,101 @@ struct Register
         return reg == other.reg;
     }
 
+    int Size() const
+    {
+        switch(reg)
+        {
+        case RAX:
+        case RBX:
+        case RCX:
+        case RDX:
+        case RBP:
+        case RSP:
+        case RSI:
+        case RDI:
+        case R8:
+        case R9:
+        case R10:
+        case R11:
+        case R12:
+        case R13:
+        case R14:
+        case R15:
+            return sizeof(uint64_t);
+        case EAX:
+        case EBX:
+        case ECX:
+        case EDX:
+        case EBP:
+        case ESP:
+        case ESI:
+        case EDI:
+        case R8D:
+        case R9D:
+        case R10D:
+        case R11D:
+        case R12D:
+        case R13D:
+        case R14D:
+        case R15D:
+            return sizeof(uint32_t);
+        case AX:
+        case BX:
+        case CX:
+        case DX:
+        case BP:
+        case SP:
+        case SI:
+        case DI:
+        case R8W:
+        case R9W:
+        case R10W:
+        case R11W:
+        case R12W:
+        case R13W:
+        case R14W:
+        case R15W:
+            return sizeof(uint16_t);
+        case AH:
+        case AL:
+        case BH:
+        case BL:
+        case CH:
+        case CL:
+        case DH:
+        case DL:
+        case BPL:
+        case SPL:
+        case SIL:
+        case DIL:
+        case R8B:
+        case R9B:
+        case R10B:
+        case R11B:
+        case R12B:
+        case R13B:
+        case R14B:
+        case R15B:
+            return sizeof(uint8_t);
+        default:
+            __debugbreak();
+        }
+        return 0;
+    }
+
+    int Offset() const
+    {
+        switch(reg)
+        {
+        case AH:
+        case BH:
+        case CH:
+        case DH:
+            return 1;
+        default:
+            return 0;
+        }
+    }
+
     OPNEQ(Register);
 };
-
-#endif //REGISTER_H
