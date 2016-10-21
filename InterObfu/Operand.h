@@ -19,9 +19,9 @@ struct Operand
     Register reg;
     Value imm;
     Memory mem;
+    Value size;
 
-    uint8_t access = 0;
-    uint8_t size = 0;
+    uint8_t access = 0;    
 
     CompareFunction<Operand> compare = nullptr;
 
