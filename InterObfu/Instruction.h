@@ -66,7 +66,7 @@ struct Instruction
     Operand & operator[](size_t index)
     {
 #ifdef _DEBUG
-        if(index >= _countof(operands) || index >= opCount)
+        if(index >= _countof(operands) || index >= size_t(opCount))
             __debugbreak();
 #endif //_DEBUG
         return operands[index];
@@ -75,7 +75,7 @@ struct Instruction
     const Operand & operator[](size_t index) const
     {
 #ifdef _DEBUG
-        if(index >= _countof(operands) || index >= opCount)
+        if(index >= _countof(operands) || index >= size_t(opCount))
             __debugbreak();
 #endif //_DEBUG
         return operands[index];
@@ -87,6 +87,9 @@ struct Instruction
             return compare(*this, other);
         if(other.compare)
             return other.compare(other, *this);
+
+        if(opcode != other.opcode)
+            return false;
 
         if(opCount != other.opCount)
             return false;

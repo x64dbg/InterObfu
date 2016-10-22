@@ -6,7 +6,7 @@ struct Segment
 {
     enum Segments
     {
-        Invalid,
+        INVALID,
         CS,
         SS,
         DS,
@@ -20,10 +20,13 @@ struct Segment
     CompareFunction<Segment> compare = nullptr;
 
     explicit Segment()
-        : seg(Invalid) { }
+        : seg(INVALID) { }
+
+    explicit Segment(Segments seg)
+        : seg(seg) { }
 
     explicit Segment(CompareFunction<Segment> compare)
-        : seg(Invalid), compare(compare) { }
+        : seg(INVALID), compare(compare) { }
 
     bool operator==(const Segment & other) const
     {

@@ -46,6 +46,7 @@ struct State
 
     static const int MaxStateCount = 4;
 
+    StateValue<Operand> operands[MaxStateCount];
     StateValue<Register> registers[MaxStateCount];
     StateValue<Value> values[MaxStateCount];
     StateValue<Memory> memorys[MaxStateCount];
@@ -58,8 +59,9 @@ struct State
 
     void Clear()
     {
-        for(int i = 0; i < MaxStateCount; i++)
+        for(auto i = 0; i < MaxStateCount; i++)
         {
+            operands[i] = StateValue<Operand>();
             registers[i] = StateValue<Register>();
             values[i] = StateValue<Value>();
             memorys[i] = StateValue<Memory>();
@@ -67,50 +69,41 @@ struct State
         }
     }
 
+    template<typename T>
+    static CompareFunction<T> MakeTN(StateValue<T>(&state)[MaxStateCount], int index)
+    {
+        return [&state, index](const T & aThis, const T & bOther)
+        {
+            if(state[index]) //already matched before
+                return state[index] == bOther;
+            state[index] = bOther;
+            return true;
+        };
+    }
+
+    CompareFunction<Operand> MakeOperandN(int opIndex)
+    {
+        return MakeTN(operands, opIndex);
+    }
+
     CompareFunction<Register> MakeRegisterN(int regIndex)
     {
-        return [this, regIndex](const Register & aThis, const Register & bOther)
-        {
-            if(!registers[regIndex]) //didn't match yet
-            {
-                registers[regIndex] = bOther;
-                return true;
-            }
-            else
-                return registers[regIndex] == bOther;
-        };
+        return MakeTN(registers, regIndex);
     }
 
     CompareFunction<Memory> MakeMemoryN(int memIndex)
     {
-        return [this, memIndex](const Memory & aThis, const Memory & bOther)
-        {
-            if(!memorys[memIndex]) //didnt match yet
-            {
-                memorys[memIndex] = bOther;
-                return true;
-            }
-            else
-            {
-                return memorys[memIndex] == bOther;
-            }
-        };
+        return MakeTN(memorys, memIndex);
     }
 
     CompareFunction<Value> MakeValueN(int valIndex)
     {
-        return [this, valIndex](const Value & aThis, const Value & bOther)
-        {
-            if(!values[valIndex]) //didnt match yet
-            {
-                values[valIndex] = bOther;
-                return true;
-            }
-            else
-            {
-                return values[valIndex] == bOther;
-            }
-        };
+        return MakeTN(values, valIndex);
+    }
+
+    CompareFunction<Opcode> MakeOpcodeN(int opIndex)
+    {
+        return MakeTN(opcodes, opIndex);
     }
 
     CompareFunction<Opcode> MakeOpcodeList(int opIndex, const std::vector<Opcode::Mnemonics> & possible)
