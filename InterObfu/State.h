@@ -91,6 +91,14 @@ struct State
         return MakeTN(registers, regIndex);
     }
 
+    CompareFunction<Register> MakeRegisterSize(int bitsize)
+    {
+        return [bitsize](const Register & aThis, const Register & bOther)
+        {
+            return bOther.Size() * 8 == bitsize;
+        };
+    }
+
     CompareFunction<Memory> MakeMemoryN(int memIndex)
     {
         return MakeTN(memorys, memIndex);
