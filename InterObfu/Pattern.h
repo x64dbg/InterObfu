@@ -21,7 +21,7 @@ struct Pattern
                 if(pos == instrs.size())
                     return i - instrs.size() + 1;
             }
-            else if(pos > 0)
+            else
             {
                 i -= pos;
                 pos = 0; //reset current pattern position
