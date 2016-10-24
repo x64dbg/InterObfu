@@ -20,6 +20,8 @@
 * SOFTWARE.
 */
 
+//Taken from: https://github.com/blockchaindev/aho_corasick
+
 #ifndef AHO_CORASICK_HPP
 #define AHO_CORASICK_HPP
 
