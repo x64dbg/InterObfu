@@ -172,9 +172,33 @@ void matchTest()
     checkEqual(movRcxRcx, movReg1Reg1);
 }
 
+#include "aho-corasick.h"
+
+void testAhoCorasick()
+{
+    /*
+    var dict = new[] {"a", "ab", "bab", "bc", "bca", "c", "caa"};
+    var haystack = "abccab"
+    a = X86_INS_MOV
+    b = X86_INS_PUSH
+    c = X86_INS_XOR
+    */
+    aho_corasick::basic_trie<char> trie;
+
+    auto dict = std::vector<std::string> {"a", "ab", "bab", "bc", "bca", "c", "caa"};
+    for(auto & d : dict)
+        trie.insert(d);
+    auto result = trie.parse_text("abccab");
+    for(auto & r : result)
+    {
+        printf("r: %d-%d \"%s\"\n", r.get_start(), r.get_end(), r.get_keyword().c_str());
+    }
+}
+
 int main()
 {
-    matchTest2();
+    testAhoCorasick();
+    //matchTest2();
 
     system("pause");
 

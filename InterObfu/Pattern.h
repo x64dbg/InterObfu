@@ -31,6 +31,17 @@ struct Pattern
         return -1;
     }
 
+    bool IsMatch(const std::vector<Instruction> & data, size_t start)
+    {
+        state.Clear();
+        if(instrs.size() > data.size() - start)
+            return false;
+        for(size_t i = start, pos = 0; i < data.size(); i++, pos++)
+            if(data[i] != instrs[pos])
+                return false;
+        return true;
+    }
+
     void Add(const Instruction & instr)
     {
         instrs.push_back(instr);

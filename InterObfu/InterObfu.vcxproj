@@ -115,6 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="aho-corasick.h" />
     <ClInclude Include="Convert.h" />
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="Memory.h" />
