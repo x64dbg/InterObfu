@@ -92,7 +92,7 @@ inline Instruction FromCapstone(const cs_insn* insn)
     memcpy(instr.bytes, insn->bytes, sizeof(instr.bytes));
     instr.eflags = x86.eflags;
     instr.opCount = x86.op_count;
-    for(auto i = 0; i < instr.opCount;i++)
+    for(auto i = 0; i < instr.opCount; i++)
     {
         const auto & op = x86.operands[i];
         switch(op.type)
@@ -105,11 +105,11 @@ inline Instruction FromCapstone(const cs_insn* insn)
             break;
         case X86_OP_MEM:
             instr.operands[i] = Operand(Memory(
-                Segment(convertSeg(op.mem.segment)),
-                Register(convertReg(op.mem.base)),
-                Register(convertReg(op.mem.index)),
-                Value(op.mem.scale),
-                Value(op.mem.disp)));
+                                            Segment(convertSeg(op.mem.segment)),
+                                            Register(convertReg(op.mem.base)),
+                                            Register(convertReg(op.mem.index)),
+                                            Value(op.mem.scale),
+                                            Value(op.mem.disp)));
             break;
         default:
             __debugbreak();

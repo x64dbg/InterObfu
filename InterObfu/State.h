@@ -11,7 +11,7 @@ struct State
     struct StateValue
     {
         explicit StateValue()
-            :set(false) { }
+            : set(false) { }
 
         explicit StateValue(const T & value)
             : set(true), val(value) { }
