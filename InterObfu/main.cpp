@@ -183,16 +183,69 @@ void testAhoCorasick()
     b = X86_INS_PUSH
     c = X86_INS_XOR
     */
-    aho_corasick::basic_trie<char> trie;
 
+    std::basic_string<char> input("abccab");
+    puts("input:");
+    puts(input.c_str());
+    puts("");
+
+    aho_corasick::basic_trie<char> trie;
+    //trie.remove_overlaps(); //this has undesired behavior because it's not fine-grained enough
     auto dict = std::vector<std::string> {"a", "ab", "bab", "bc", "bca", "c", "caa"};
+    puts("strings:");
+    unsigned index = 0;
     for(auto & d : dict)
-        trie.insert(d);
-    auto result = trie.parse_text("abccab");
-    for(auto & r : result)
     {
-        printf("r: %d-%d \"%s\"\n", r.get_start(), r.get_end(), r.get_keyword().c_str());
+        printf("%u:%s\n", index++, d.c_str());
+        trie.insert(d);
     }
+    puts("");
+
+    auto result = trie.parse_text(input);
+    puts("results (unfiltered):");
+    for(auto & r : result)
+        printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), r.get_keyword().c_str());
+    puts("");
+
+    //This creates a map from (match start) -> (result index).
+    //Before considering a result it is checked with a predicate.
+    //On conflicting (match start) we use a predicate.
+
+    auto validPredicate = [](const aho_corasick::emit<char> & r) //is r a valid result?
+    {
+        return true; //TODO: implement by trying a full pattern match with wildcards
+    };
+
+    auto betterPredicate = [](const aho_corasick::emit<char> & a, const aho_corasick::emit<char> & b) //is a better than b?
+    {
+        if(a.size() > b.size()) //longer patterns are always better
+            return true;
+        return a.get_start() < b.get_start(); //patterns that start earlier are better
+    };
+
+    std::unordered_map<size_t, size_t> best;
+    best.reserve(result.size());
+    for(size_t i = 0; i < result.size(); i++)
+    {
+        const auto & r = result.at(i);
+        if(!validPredicate(r)) //skip invalid results
+            continue;
+        auto found = best.find(r.get_start());
+        if(found == best.end()) //add the current result if not found
+            best[r.get_start()] = i;
+        else if(betterPredicate(r, result[found->second])) //replace if the current result better
+            found->second = i;
+    }
+
+    //TODO: overlapping results should be filtered with the betterPredicate
+
+    puts("results (filtered):");
+    for(const auto & it : best)
+    {
+        const auto & r = result[it.second];
+        printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), r.get_keyword().c_str());
+    }
+    puts("");
 }
 
 int main()
