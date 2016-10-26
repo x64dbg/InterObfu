@@ -116,12 +116,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="aho-corasick.h" />
+    <ClInclude Include="Assemble.h" />
     <ClInclude Include="Convert.h" />
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Opcode.h" />
     <ClInclude Include="Operand.h" />
     <ClInclude Include="Pattern.h" />
+    <ClInclude Include="Peephole.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="Segment.h" />
     <ClInclude Include="State.h" />

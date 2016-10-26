@@ -16,6 +16,8 @@ class Converter
     template<typename K, typename V>
     static V k2v(const std::unordered_map<K, V> & m, const K & k)
     {
+        if(m.empty())
+            __debugbreak(); //map not initialized
         auto found = m.find(k);
         return found == m.end() ? V() : found->second;
     }

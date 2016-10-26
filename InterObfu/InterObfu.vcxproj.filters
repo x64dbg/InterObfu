@@ -47,6 +47,12 @@
     <ClInclude Include="aho-corasick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Peephole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Assemble.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

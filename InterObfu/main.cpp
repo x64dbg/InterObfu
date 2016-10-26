@@ -2,48 +2,8 @@
 #include <cstdio>
 #include "State.h"
 #include "Pattern.h"
-#include "Convert.h"
-#include "XEDParse/XEDParse.h"
-
-#ifdef _WIN64
-#pragma comment(lib, "XEDParse/XEDParse_x64.lib")
-#pragma comment(lib, "capstone_wrapper/capstone/capstone_x64.lib")
-#else
-#pragma comment(lib, "XEDParse/XEDParse_x86.lib")
-#pragma comment(lib, "capstone_wrapper/capstone/capstone_x86.lib")
-#endif //_WIN64
-
-static Instruction Assemble(const std::string & text, int mode = 32, uint64_t addr = 0)
-{
-    Instruction result(X86_INS_NOP);
-    XEDPARSE XEDParse;
-    XEDParse.x64 = mode == 64;
-    XEDParse.cip = addr;
-    strncpy_s(XEDParse.instr, text.c_str(), _TRUNCATE);
-    if(XEDParseAssemble(&XEDParse) == XEDPARSE_OK)
-    {
-        csh handle;
-        if(cs_open(CS_ARCH_X86, mode == 32 ? CS_MODE_32 : CS_MODE_64, &handle) == CS_ERR_OK)
-        {
-            cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
-            const uint8_t* data = XEDParse.dest;
-            cs_insn* insn = cs_malloc(handle);
-            size_t codeSize = XEDParse.dest_size;
-            uint64_t addr64 = addr;
-            if(cs_disasm_iter(handle, &data, &codeSize, &addr64, insn))
-                result = FromCapstone(insn);
-            else
-                puts("cs_disasm_iter failed!");
-            cs_free(insn, 1);
-            cs_close(&handle);
-        }
-        else
-            puts("cs_open failed!");
-    }
-    else
-        printf("XEDParse error: %s\n", XEDParse.error);
-    return result;
-}
+#include "Assemble.h"
+#include "Peephole.h"
 
 struct WildcardImm : Value
 {
@@ -129,7 +89,7 @@ void matchTest2()
     Pattern pat1;
     pat1.Add(Instruction(X86_INS_PUSH, Operand(Register(pat1.state.MakeRegisterN(1))))); //push reg1
     pat1.Add(Instruction(X86_INS_POP, Operand(Register(pat1.state.MakeRegisterN(2))))); //pop reg2
-    printf("match1: %lld\n", pat1.Match(ins1));
+    printf("match1: %lld\n", pat1.Search(ins1));
 
     std::vector<Instruction> ins2;
     ins2.push_back(Assemble("xor eax, 0"));
@@ -141,7 +101,7 @@ void matchTest2()
     Pattern pat2;
     pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(pat2.state.MakeRegisterN(1))))); //push reg1
     pat2.Add(Instruction(X86_INS_POP, Operand(Register(pat2.state.MakeRegisterN(1))))); //pop reg1
-    printf("match2: %lld\n", pat2.Match(ins2));
+    printf("match2: %lld\n", pat2.Search(ins2));
 
     std::vector<Instruction> ins3;
     ins3.push_back(Assemble("mov dword ptr ds:[eax+ebx*2], ecx"));
@@ -150,7 +110,7 @@ void matchTest2()
     Pattern pat3;
     pat3.Add(Instruction(X86_INS_MOV, Operand(Memory(pat3.state.MakeMemoryN(1))), Operand(pat3.state.MakeOperandN(1)))); //mov memory1, op1
     pat3.Add(Instruction(X86_INS_MOV, Operand(pat3.state.MakeOperandN(1)), Operand(Memory(pat3.state.MakeMemoryN(1))))); //mov op1, memory1
-    printf("match3: %lld\n", pat3.Match(ins3));
+    printf("match3: %lld\n", pat3.Search(ins3));
 }
 
 void matchTest()
@@ -201,9 +161,9 @@ void testAhoCorasick()
     }
     puts("");
 
-    auto result = trie.parse_text(input);
+    auto results = trie.parse_text(input);
     puts("results (unfiltered):");
-    for(auto & r : result)
+    for(auto & r : results)
         printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), r.get_keyword().c_str());
     puts("");
 
@@ -224,16 +184,16 @@ void testAhoCorasick()
     };
 
     std::unordered_map<size_t, size_t> best;
-    best.reserve(result.size());
-    for(size_t i = 0; i < result.size(); i++)
+    best.reserve(results.size());
+    for(size_t i = 0; i < results.size(); i++)
     {
-        const auto & r = result.at(i);
+        const auto & r = results.at(i);
         if(!validPredicate(r)) //skip invalid results
             continue;
         auto found = best.find(r.get_start());
         if(found == best.end()) //add the current result if not found
             best[r.get_start()] = i;
-        else if(betterPredicate(r, result[found->second])) //replace if the current result better
+        else if(betterPredicate(r, results[found->second])) //replace if the current result better
             found->second = i;
     }
 
@@ -242,7 +202,7 @@ void testAhoCorasick()
     puts("results (filtered):");
     for(const auto & it : best)
     {
-        const auto & r = result[it.second];
+        const auto & r = results[it.second];
         printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), r.get_keyword().c_str());
     }
     puts("");
@@ -277,6 +237,23 @@ void testConverter()
         puts("instruction 3 ok!");
     else
         puts("instruction 3 failed...");
+}
+
+void testPeephole()
+{
+    std::vector<Instruction> ins1;
+    ins1.push_back(Assemble("xor eax, 0"));
+    ins1.push_back(Assemble("push ecx"));
+    ins1.push_back(Assemble("push ecx"));
+    ins1.push_back(Assemble("pop eax"));
+    ins1.push_back(Assemble("pop eax"));
+    ins1.push_back(Assemble("nop"));
+
+    Pattern pat1;
+    pat1.Add(Assemble("xor eax, 0"));
+
+    Pattern pat2;
+    //pat2.Add(")
 }
 
 int main()

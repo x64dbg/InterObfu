@@ -2,13 +2,23 @@
 
 #include "Instruction.h"
 #include "State.h"
+#include "Assemble.h"
 
 struct Pattern
 {
     State state;
     std::vector<Instruction> instrs;
 
-    int64_t Match(const std::vector<Instruction> & data, size_t start = 0)
+    //This function append the replacement instructions to 'out'.
+    //It should use state to replace the correct registers etc.
+    bool Produce(std::vector<Instruction> & out) const
+    {
+        //TODO: properly implement with wildcard replacements
+        out.push_back(Assemble("nop"));
+        return true;
+    }
+
+    int64_t Search(const std::vector<Instruction> & data, size_t start = 0)
     {
         state.Clear();
         if(instrs.size() > data.size() - start)
