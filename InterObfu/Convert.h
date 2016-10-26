@@ -4,45 +4,29 @@
 #include "capstone_wrapper/capstone_wrapper.h"
 #include <unordered_map>
 
-inline std::pair<std::unordered_map<std::string, Register::Registers>, std::unordered_map<Register::Registers, std::string>> populateRegisterMap()
+class Converter
 {
-    std::unordered_map<std::string, Register::Registers> str2reg;
-    std::unordered_map<Register::Registers, std::string> reg2str;
-    csh handle;
-    if(cs_open(CS_ARCH_X86, CS_MODE_32, &handle) == CS_ERR_OK)
-    {
-        for(auto i = 0; i < int(X86_REG_ENDING); i++)
-        {
-            auto regname = cs_reg_name(handle, i);
-            if(!regname)
-                __debugbreak();
-            str2reg[regname] = Register::Registers(i);
-            reg2str[Register::Registers(i)] = regname;
-        }
-    }
-    cs_close(&handle);
-    return { str2reg, reg2str };
-}
+    Converter() = delete;
 
-inline std::pair<std::unordered_map<std::string, Opcode::Mnemonics>, std::unordered_map<Opcode::Mnemonics, std::string>> populateInstructionMap()
-{
-    std::unordered_map<std::string, Opcode::Mnemonics> str2ins;
-    std::unordered_map<Opcode::Mnemonics, std::string> ins2str;
-    csh handle;
-    if(cs_open(CS_ARCH_X86, CS_MODE_32, &handle) == CS_ERR_OK)
+    static std::unordered_map<std::string, Register::Registers> mstr2reg;
+    static std::unordered_map<Register::Registers, std::string> mreg2str;
+    static std::unordered_map<std::string, Opcode::Mnemonics> mstr2ins;
+    static std::unordered_map<Opcode::Mnemonics, std::string> mins2str;
+
+    template<typename K, typename V>
+    static V k2v(const std::unordered_map<K, V> & m, const K & k)
     {
-        for(auto i = 0; i < int(X86_INS_ENDING); i++)
-        {
-            auto insname = cs_reg_name(handle, i);
-            if(!insname)
-                __debugbreak();
-            str2ins[insname] = Opcode::Mnemonics(i);
-            ins2str[Opcode::Mnemonics(i)] = insname;
-        }
+        auto found = m.find(k);
+        return found == m.end() ? V() : found->second;
     }
-    cs_close(&handle);
-    return { str2ins, ins2str };
-}
+
+public:
+    static void init();
+    static Register::Registers str2reg(const std::string & str);
+    static std::string reg2str(Register::Registers reg);
+    static Opcode::Mnemonics str2ins(const std::string & str);
+    static std::string ins2str(Opcode::Mnemonics ins);
+};
 
 inline Register::Registers convertReg(x86_reg reg)
 {

@@ -248,10 +248,43 @@ void testAhoCorasick()
     puts("");
 }
 
+void testConverter()
+{
+    Converter::init();
+
+    if(Converter::reg2str(Converter::str2reg("eax")) == "eax")
+        puts("register 1 ok!");
+    else
+        puts("register 1 failed...");
+    if(Converter::str2reg("asd") == Register::INVALID)
+        puts("register 2 ok!");
+    else
+        puts("register 2 failed...");
+    if(Converter::reg2str(Register::Registers(-1)).empty())
+        puts("register 3 ok!");
+    else
+        puts("register 3 failed...");
+
+    if(Converter::ins2str(Converter::str2ins("push")) == "push")
+        puts("instruction 1 ok!");
+    else
+        puts("instruction 1 failed...");
+    if(Converter::str2ins("asd") == X86_INS_INVALID)
+        puts("instruction 2 ok!");
+    else
+        puts("instruction 2 failed...");
+    if(Converter::ins2str(Opcode::Mnemonics(-1)).empty())
+        puts("instruction 3 ok!");
+    else
+        puts("instruction 3 failed...");
+}
+
 int main()
 {
+
     testAhoCorasick();
     //matchTest2();
+    testConverter();
 
     system("pause");
 
