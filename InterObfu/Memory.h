@@ -48,4 +48,6 @@ struct Memory
     bool operator==(const Memory & other) const = delete;
 
     OPNEQ(Memory);
+
+    std::string ToString() const;
 };

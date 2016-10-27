@@ -41,4 +41,6 @@ struct Segment
     bool operator==(const Segment & other) const = delete;
 
     OPNEQ(Segment);
+
+    std::string ToString() const;
 };

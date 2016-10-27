@@ -32,4 +32,6 @@ struct Opcode
     bool operator==(const Opcode & other) const = delete;
 
     OPNEQ(Opcode);
+
+    std::string ToString() const;
 };

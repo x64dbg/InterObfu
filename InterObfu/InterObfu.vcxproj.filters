@@ -61,5 +61,8 @@
     <ClCompile Include="Convert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ToString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

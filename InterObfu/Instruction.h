@@ -102,4 +102,6 @@ struct Instruction
     bool operator==(const Instruction & other) const = delete;
 
     OPNEQ(Instruction);
+
+    std::string ToString() const;
 };

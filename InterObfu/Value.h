@@ -30,4 +30,6 @@ struct Value
     bool operator==(const Value & other) const = delete;
 
     OPNEQ(Value);
+
+    std::string ToString() const;
 };

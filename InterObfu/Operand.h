@@ -73,4 +73,6 @@ struct Operand
     bool operator==(const Operand & other) const = delete;
 
     OPNEQ(Operand);
+
+    std::string ToString() const;
 };

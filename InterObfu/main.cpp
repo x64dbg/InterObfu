@@ -271,7 +271,7 @@ void testPeephole()
     {
         puts("========");
         for(auto & instr : instrs)
-            puts(Converter::ins2str(instr.opcode.mnem).c_str());
+            puts(instr.ToString().c_str());
         puts("========");
     };
     puts("input:");
@@ -282,7 +282,7 @@ void testPeephole()
         if(!peephole.Optimize(ins1, optimized))
             break;
         ins1 = optimized;
-        printf("pass %d:\n", i);
+        printf("pass %d:\n", i + 1);
         printInstrs(ins1);
     }
     puts("output:");

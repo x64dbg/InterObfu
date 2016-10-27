@@ -86,6 +86,8 @@ struct Register
 
     OPNEQ(Register);
 
+    std::string ToString() const;
+
     int Size() const
     {
         switch(reg)
