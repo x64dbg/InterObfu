@@ -59,7 +59,7 @@ public:
             if(pa.repls.size() != pb.repls.size()) //shorter replacements are better
                 return pa.repls.size() < pb.repls.size();
 
-            return true; //first pattern is better
+            return false; //both patterns are equal
         };
 
         //Drop fake matches (mnemonic only, not operands) in O(r * x) with r = results.size(), x = max(results[i].size())
