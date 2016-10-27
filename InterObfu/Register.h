@@ -72,12 +72,12 @@ struct Register
     explicit Register(Registers reg)
         : reg(reg) { }
 
-    bool Equals(const Register & other) const
+    bool Equals(const Register & other, State & state) const
     {
         if(compare)
-            return compare(*this, other);
+            return compare(*this, other, state);
         if(other.compare)
-            return other.compare(other, *this);
+            return other.compare(other, *this, state);
 
         return reg == other.reg;
     }

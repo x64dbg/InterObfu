@@ -8,7 +8,7 @@
 struct WildcardImm : Value
 {
     explicit WildcardImm()
-        : Value([](const Value & a, const Value & b)
+        : Value([](const Value & a, const Value & b, State & state)
     {
         return true;
     }) { }
@@ -28,7 +28,8 @@ void basicTest()
     push300_.operands[0].type = Operand::Imm;
     push300_.operands[0].imm.val = 0x300;
 
-    printf("equal: %d %d %d\n", push300.Equals(push300_), push300.Equals(pushImm), pushImm.Equals(push300));
+    State s;
+    printf("equal: %d %d %d\n", push300.Equals(push300_, s), push300.Equals(pushImm, s), pushImm.Equals(push300, s));
 
     //representation of "mov eax, ebx"
     Instruction movReg;
@@ -70,7 +71,8 @@ void basicTest()
 
 void checkEqual(const Instruction & a, const Instruction & b)
 {
-    if(a.Equals(b))
+    State s;
+    if(a.Equals(b, s))
         puts("a == b");
     else
         puts("a != b");
@@ -251,15 +253,19 @@ void testPeephole()
     ins1.push_back(Assemble("pop ecx"));
     ins1.push_back(Assemble("mov eax, 0x1234"));
 
+    std::vector<Pattern> patterns;
+
     Pattern pat1;
     pat1.Add("shl eax, 0");
+    patterns.push_back(pat1);
 
     Pattern pat2;
     pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(pat2.state.MakeRegisterN(1)))));
     pat2.Add(Instruction(X86_INS_POP, Operand(Register(pat2.state.MakeRegisterN(1)))));
+    patterns.push_back(pat2);
 
     Converter::init();
-    Peephole peephole(std::vector<Pattern> { pat1, pat2 });
+    Peephole peephole(patterns);
     const auto MaxPasses = 1000;
     auto printInstrs = [](const std::vector<Instruction> & instrs)
     {
@@ -285,11 +291,11 @@ void testPeephole()
 
 int main()
 {
-    //testPeephole();
+    testPeephole();
     //testAhoCorasick();
-    basicTest();
-    matchTest();
-    matchTest2();
+    //basicTest();
+    //matchTest();
+    //matchTest2();
     //testConverter();
 
     system("pause");

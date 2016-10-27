@@ -19,12 +19,12 @@ struct Opcode
     explicit Opcode(Mnemonics mnem)
         : mnem(mnem) { }
 
-    bool Equals(const Opcode & other) const
+    bool Equals(const Opcode & other, State & state) const
     {
         if(compare)
-            return compare(*this, other);
+            return compare(*this, other, state);
         if(other.compare)
-            return other.compare(other, *this);
+            return other.compare(other, *this, state);
 
         return mnem == other.mnem;
     }

@@ -46,12 +46,12 @@ struct Operand
         : type(Mem),
           mem(mem) { }
 
-    bool Equals(const Operand & other) const
+    bool Equals(const Operand & other, State & state) const
     {
         if(compare)
-            return compare(*this, other);
+            return compare(*this, other, state);
         if(other.compare)
-            return other.compare(other, *this);
+            return other.compare(other, *this, state);
 
         if(type != other.type)
             return false;
@@ -60,11 +60,11 @@ struct Operand
         case Invalid:
             return true;
         case Reg:
-            return reg.Equals(other.reg);
+            return reg.Equals(other.reg, state);
         case Imm:
-            return imm.Equals(other.imm);
+            return imm.Equals(other.imm, state);
         case Mem:
-            return mem.Equals(other.mem);
+            return mem.Equals(other.mem, state);
         default:
             return false;
         }

@@ -32,10 +32,12 @@ struct State
             return val;
         }
 
-        bool operator==(const T & other) const
+        bool Equals(const T & other, State & state) const
         {
-            return val.Equals(other);
+            return val.Equals(other, state);
         }
+
+        bool operator==(const T & other) const = delete;
 
         OPNEQ(T);
 
@@ -69,62 +71,80 @@ struct State
         }
     }
 
-    template<typename T>
-    static CompareFunction<T> MakeTN(StateValue<T>(&state)[MaxStateCount], int index)
+    static CompareFunction<Operand> MakeOperandN(int index)
     {
-        return [&state, index](const T & aThis, const T & bOther)
+        return [index](const Operand & aThis, const Operand & bOther, State & state)
         {
-            if(state[index]) //already matched before
-                return state[index] == bOther;
-            state[index] = bOther;
+            if(state.operands[index]) //already matched before
+                return state.operands[index].Equals(bOther, state);
+            state.operands[index] = bOther;
             return true;
         };
     }
 
-    CompareFunction<Operand> MakeOperandN(int opIndex)
+    static CompareFunction<Register> MakeRegisterN(int index)
     {
-        return MakeTN(operands, opIndex);
+        return [index](const Register & aThis, const Register & bOther, State & state)
+        {
+            if(state.registers[index]) //already matched before
+                return state.registers[index].Equals(bOther, state);
+            state.registers[index] = bOther;
+            return true;
+        };
     }
 
-    CompareFunction<Register> MakeRegisterN(int regIndex)
+    static CompareFunction<Register> MakeRegisterSize(int bitsize)
     {
-        return MakeTN(registers, regIndex);
-    }
-
-    CompareFunction<Register> MakeRegisterSize(int bitsize)
-    {
-        return [bitsize](const Register & aThis, const Register & bOther)
+        return [bitsize](const Register & aThis, const Register & bOther, State & state)
         {
             return bOther.Size() * 8 == bitsize;
         };
     }
 
-    CompareFunction<Memory> MakeMemoryN(int memIndex)
+    static CompareFunction<Memory> MakeMemoryN(int index)
     {
-        return MakeTN(memorys, memIndex);
-    }
-
-    CompareFunction<Value> MakeValueN(int valIndex)
-    {
-        return MakeTN(values, valIndex);
-    }
-
-    CompareFunction<Opcode> MakeOpcodeN(int opIndex)
-    {
-        return MakeTN(opcodes, opIndex);
-    }
-
-    CompareFunction<Opcode> MakeOpcodeList(int opIndex, const std::vector<Opcode::Mnemonics> & possible)
-    {
-        return [this, opIndex, possible](const Opcode & aThis, const Opcode & bOther)
+        return [index](const Memory & aThis, const Memory & bOther, State & state)
         {
-            if(!opcodes[opIndex]) //didn't match yet
+            if(state.memorys[index]) //already matched before
+                return state.memorys[index].Equals(bOther, state);
+            state.memorys[index] = bOther;
+            return true;
+        };
+    }
+
+    static CompareFunction<Value> MakeValueN(int index)
+    {
+        return [index](const Value & aThis, const Value & bOther, State & state)
+        {
+            if(state.values[index]) //already matched before
+                return state.values[index].Equals(bOther, state);
+            state.values[index] = bOther;
+            return true;
+        };
+    }
+
+    static CompareFunction<Opcode> MakeOpcodeN(int index)
+    {
+        return [index](const Opcode & aThis, const Opcode & bOther, State & state)
+        {
+            if(state.opcodes[index]) //already matched before
+                return state.opcodes[index].Equals(bOther, state);
+            state.opcodes[index] = bOther;
+            return true;
+        };
+    }
+
+    static CompareFunction<Opcode> MakeOpcodeList(int opIndex, const std::vector<Opcode::Mnemonics> & possible)
+    {
+        return [opIndex, possible](const Opcode & aThis, const Opcode & bOther, State & state)
+        {
+            if(!state.opcodes[opIndex]) //didn't match yet
             {
                 for(auto & mnem : possible)
                 {
                     if(mnem == bOther.mnem)
                     {
-                        opcodes[opIndex] = bOther;
+                        state.opcodes[opIndex] = bOther;
                         return true;
                     }
                 }

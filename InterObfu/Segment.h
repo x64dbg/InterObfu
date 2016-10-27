@@ -28,12 +28,12 @@ struct Segment
     explicit Segment(CompareFunction<Segment> compare)
         : seg(INVALID), compare(compare) { }
 
-    bool Equals(const Segment & other) const
+    bool Equals(const Segment & other, State & state) const
     {
         if(compare)
-            return compare(*this, other);
+            return compare(*this, other, state);
         if(other.compare)
-            return other.compare(other, *this);
+            return other.compare(other, *this, state);
 
         return seg == other.seg;
     }

@@ -81,20 +81,20 @@ struct Instruction
         return operands[index];
     }
 
-    bool Equals(const Instruction & other) const
+    bool Equals(const Instruction & other, State & state) const
     {
         if(compare)
-            return compare(*this, other);
+            return compare(*this, other, state);
         if(other.compare)
-            return other.compare(other, *this);
+            return other.compare(other, *this, state);
 
-        if(!opcode.Equals(other.opcode))
+        if(!opcode.Equals(other.opcode, state))
             return false;
 
         if(opCount != other.opCount)
             return false;
         for(auto i = 0; i < opCount; i++)
-            if(!operands[i].Equals(other.operands[i]))
+            if(!operands[i].Equals(other.operands[i], state))
                 return false;
         return true;
     }

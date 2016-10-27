@@ -17,12 +17,12 @@ struct Value
     explicit Value(int64_t val)
         : val(val) { }
 
-    bool Equals(const Value & other) const
+    bool Equals(const Value & other, State & state) const
     {
         if(compare)
-            return compare(*this, other);
+            return compare(*this, other, state);
         if(other.compare)
-            return other.compare(other, *this);
+            return other.compare(other, *this, state);
 
         return val == other.val;
     }
