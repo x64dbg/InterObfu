@@ -41,11 +41,25 @@ public:
             return mPatterns[result.get_index()].Match(in, result.get_start());
         };
 
-        auto betterPredicate = [](const aho_corasick::emit<Mnem> & a, const aho_corasick::emit<Mnem> & b) //is a better than b?
+        auto betterPredicate = [this](const aho_corasick::emit<Mnem> & a, const aho_corasick::emit<Mnem> & b) //is a better than b?
         {
-            if(a.size() > b.size()) //longer patterns are always better
-                return true;
-            return a.get_start() < b.get_start(); //patterns that start earlier are better
+            //make sure to first compare on equality and if not, return the compare
+
+            if(a.size() != b.size()) //longer patterns are always better
+                return a.size() > b.size();
+
+            if(a.get_start() != b.get_start()) //patterns that start earlier are better
+                return a.get_start() < b.get_start();
+
+            const auto & pa = mPatterns.at(a.get_index());
+            const auto & pb = mPatterns.at(b.get_index());
+            if(pa.priority != pb.priority) //patterns with higher priority are better
+                return pa.priority > pb.priority;
+
+            if(pa.repls.size() != pb.repls.size()) //shorter replacements are better
+                return pa.repls.size() < pb.repls.size();
+
+            return true; //first pattern is better
         };
 
         //Drop fake matches (mnemonic only, not operands) in O(r * x) with r = results.size(), x = max(results[i].size())

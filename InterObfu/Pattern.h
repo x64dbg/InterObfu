@@ -6,14 +6,17 @@
 
 struct Pattern
 {
+    int priority = 0;
     State state;
     std::vector<Instruction> instrs;
+    std::vector<std::function<Instruction(const State &)>> repls;
 
     //This function append the replacement instructions to 'out'.
     //It should use state to replace the correct registers etc.
     bool Produce(std::vector<Instruction> & out) const
     {
-        //TODO: properly implement with wildcard replacements
+        for(const auto & repl : repls)
+            out.push_back(repl(state));
         return true;
     }
 

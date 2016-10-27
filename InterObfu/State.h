@@ -27,7 +27,7 @@ struct State
             return val = value;
         }
 
-        T & operator()()
+        const T & operator()() const
         {
             return val;
         }

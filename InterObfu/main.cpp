@@ -255,14 +255,29 @@ void testPeephole()
 
     std::vector<Pattern> patterns;
 
-    Pattern pat1;
-    pat1.Add(Instruction(X86_INS_SHL, Operand(Register(State::MakeRegisterN(1))), Operand(Value(0))));
-    patterns.push_back(pat1);
+    {
+        Pattern pat1;
+        pat1.Add(Instruction(X86_INS_SHL, Operand(Register(State::MakeRegisterN(1))), Operand(Value(0))));
+        patterns.push_back(pat1);
+    }
 
-    Pattern pat2;
-    pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(State::MakeRegisterN(1)))));
-    pat2.Add(Instruction(X86_INS_POP, Operand(Register(State::MakeRegisterN(1)))));
-    patterns.push_back(pat2);
+    {
+        Pattern pat2;
+        pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(State::MakeRegisterN(1)))));
+        pat2.Add(Instruction(X86_INS_POP, Operand(Register(State::MakeRegisterN(1)))));
+        patterns.push_back(pat2);
+    }
+
+    {
+        Pattern pat3;
+        pat3.Add(Instruction(X86_INS_PUSH, Operand(Register(State::MakeRegisterN(1)))));
+        pat3.Add(Instruction(X86_INS_POP, Operand(Register(State::MakeRegisterN(2)))));
+        pat3.repls.push_back([](const State & state)
+        {
+            return Instruction(X86_INS_MOV, Operand(state.registers[2]()), Operand(state.registers[1]()));
+        });
+        patterns.push_back(pat3);
+    }
 
     Converter::init();
     Peephole peephole(patterns);
