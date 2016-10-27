@@ -242,26 +242,53 @@ void testConverter()
 void testPeephole()
 {
     std::vector<Instruction> ins1;
-    ins1.push_back(Assemble("xor eax, 0"));
+    ins1.push_back(Assemble("shl eax, 0"));
+    ins1.push_back(Assemble("push edx"));
     ins1.push_back(Assemble("push ecx"));
-    ins1.push_back(Assemble("push ecx"));
-    ins1.push_back(Assemble("pop eax"));
-    ins1.push_back(Assemble("pop eax"));
-    ins1.push_back(Assemble("nop"));
+    ins1.push_back(Assemble("pop ecx"));
+    ins1.push_back(Assemble("pop edx"));
+    ins1.push_back(Assemble("push eax"));
+    ins1.push_back(Assemble("pop ecx"));
+    ins1.push_back(Assemble("mov eax, 0x1234"));
 
     Pattern pat1;
-    pat1.Add(Assemble("xor eax, 0"));
+    pat1.Add("shl eax, 0");
 
     Pattern pat2;
-    //pat2.Add(")
+    pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(pat2.state.MakeRegisterN(1)))));
+    pat2.Add(Instruction(X86_INS_POP, Operand(Register(pat2.state.MakeRegisterN(1)))));
+
+    Converter::init();
+    Peephole peephole(std::vector<Pattern> { pat1, pat2 });
+    const auto MaxPasses = 1000;
+    auto printInstrs = [](const std::vector<Instruction> & instrs)
+    {
+        puts("========");
+        for(auto & instr : instrs)
+            puts(Converter::ins2str(instr.opcode.mnem).c_str());
+        puts("========");
+    };
+    puts("input:");
+    printInstrs(ins1);
+    for(auto i = 0; i < MaxPasses; i++)
+    {
+        std::vector<Instruction> optimized;
+        if(!peephole.Optimize(ins1, optimized))
+            break;
+        ins1 = optimized;
+        printf("pass %d:\n", i);
+        printInstrs(ins1);
+    }
+    puts("output:");
+    printInstrs(ins1);
 }
 
 int main()
 {
-
-    testAhoCorasick();
+    testPeephole();
+    //testAhoCorasick();
     //matchTest2();
-    testConverter();
+    //testConverter();
 
     system("pause");
 

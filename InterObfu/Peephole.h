@@ -8,7 +8,7 @@
 class Peephole
 {
 public:
-    explicit Peephole(std::vector<Pattern> patterns)
+    explicit Peephole(std::vector<Pattern> & patterns)
         : mPatterns(patterns)
     {
         preprocessTrie();
@@ -20,15 +20,16 @@ public:
         if(in.empty()) //empty input cannot be optimized
             return false;
 
-        //Use Aho�Corasick to find all mnemonic matches in O(n + r) with n = in.size(), r = results.size()
+        //Use Aho-Corasick to find all mnemonic matches in O(n + r) with n = in.size(), r = results.size()
         auto results = mTrie.parse_text(preprocessIn(in));
+
+        if(results.empty()) //no patterns found = not optimized
+            return false;
+
         puts("results (unfiltered):");
         for(auto & r : results)
             printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), prettyPrint(r.get_keyword()).c_str());
         puts("");
-
-        if(results.empty()) //no patterns found = not optimized
-            return false;
 
         //This creates a map from (match start) -> (result index).
         //Before considering a result it is checked with a predicate.
@@ -37,7 +38,7 @@ public:
         auto validPredicate = [this, &in](const aho_corasick::emit<Mnem> & result) //is r a valid result?
         {
             //Check the wildcard pattern in O(m) with m = r.size()
-            return mPatterns[result.get_index()].IsMatch(in, result.get_start());
+            return mPatterns[result.get_index()].Match(in, result.get_start());
         };
 
         auto betterPredicate = [](const aho_corasick::emit<Mnem> & a, const aho_corasick::emit<Mnem> & b) //is a better than b?
@@ -62,6 +63,9 @@ public:
                 found->second = i;
         }
 
+        if(best.empty()) //no patterns found = not optimized
+            return false;
+
         puts("results (filtered):");
         for(const auto & it : best)
         {
@@ -69,9 +73,6 @@ public:
             printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), prettyPrint(r.get_keyword()).c_str());
         }
         puts("");
-
-        if(best.empty()) //no patterns found = not optimized
-            return false;
 
         //Construct the output in O(i) with i = in.size()
         //TODO: if patterns overlap the first is taken and the overlaps are ignored
@@ -82,7 +83,8 @@ public:
             if(found != best.end()) //current instruction is the start of a match
             {
                 const auto & result = results.at(found->second);
-                const auto & pattern = mPatterns.at(result.get_index());
+                auto & pattern = mPatterns[result.get_index()];
+                pattern.Match(in, i); //match to get the correct state
                 std::vector<Instruction> product;
                 if(!pattern.Produce(product))
                     __debugbreak(); //pattern replacement production failure (invalid pattern?)
@@ -100,7 +102,7 @@ public:
 private:
     using Mnem = Opcode::Mnemonics;
 
-    std::vector<Pattern> mPatterns;
+    std::vector<Pattern> & mPatterns;
     aho_corasick::basic_trie<Mnem> mTrie;
 
     static std::string prettyPrint(const std::basic_string<Mnem> & keyword)
@@ -130,7 +132,7 @@ private:
 
     void preprocessTrie()
     {
-        //Construct the Aho�Corasick trie in O(m) with m = mPatterns.size()
+        //Construct the Aho-Corasick trie in O(m) with m = mPatterns.size()
         std::basic_string<Mnem> keyword;
         for(const auto & pattern : mPatterns)
         {

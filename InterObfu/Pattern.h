@@ -14,7 +14,6 @@ struct Pattern
     bool Produce(std::vector<Instruction> & out) const
     {
         //TODO: properly implement with wildcard replacements
-        out.push_back(Assemble("nop"));
         return true;
     }
 
@@ -41,19 +40,32 @@ struct Pattern
         return -1;
     }
 
-    bool IsMatch(const std::vector<Instruction> & data, size_t start)
+    bool Match(const std::vector<Instruction> & data, size_t start)
     {
         state.Clear();
         if(instrs.size() > data.size() - start)
             return false;
-        for(size_t i = start, pos = 0; i < data.size(); i++, pos++)
-            if(data[i] != instrs[pos])
-                return false;
-        return true;
+        for(size_t i = start, pos = 0; i < data.size(); i++)
+        {
+            if(data[i] == instrs[pos])
+            {
+                pos++;
+                if(pos == instrs.size())
+                    return true;
+            }
+            else
+                break;
+        }
+        return false;
     }
 
     void Add(const Instruction & instr)
     {
         instrs.push_back(instr);
+    }
+
+    void Add(const std::string & instr, int mode = 32, uint64_t addr = 0)
+    {
+        instrs.push_back(Assemble(instr, mode, addr));
     }
 };
