@@ -244,12 +244,12 @@ void testConverter()
 void testPeephole()
 {
     std::vector<Instruction> ins1;
+    ins1.push_back(Assemble("push eax"));
     ins1.push_back(Assemble("shl eax, 0"));
     ins1.push_back(Assemble("push edx"));
     ins1.push_back(Assemble("push ecx"));
     ins1.push_back(Assemble("pop ecx"));
     ins1.push_back(Assemble("pop edx"));
-    ins1.push_back(Assemble("push eax"));
     ins1.push_back(Assemble("pop ecx"));
     ins1.push_back(Assemble("mov eax, 0x1234"));
 
