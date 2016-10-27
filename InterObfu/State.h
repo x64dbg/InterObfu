@@ -5,6 +5,12 @@
 #include "Value.h"
 #include "Register.h"
 
+template<typename T>
+static bool Wildcard(const T &, const T &, State &)
+{
+    return true;
+}
+
 struct State
 {
     template<typename T>
@@ -69,6 +75,21 @@ struct State
             memorys[i] = StateValue<Memory>();
             opcodes[i] = StateValue<Opcode>();
         }
+    }
+
+    static CompareFunction<Segment> SegWild()
+    {
+        return Wildcard<Segment>;
+    }
+
+    static CompareFunction<Register> RegWild()
+    {
+        return Wildcard<Register>;
+    }
+
+    static CompareFunction<Value> ValWild()
+    {
+        return Wildcard<Value>;
     }
 
     static CompareFunction<Operand> MakeOperandN(int index)

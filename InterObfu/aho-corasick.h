@@ -291,19 +291,19 @@ namespace aho_corasick
 
     private:
         string_type d_keyword;
-        unsigned    d_index = 0;
+        size_t      d_index = 0;
 
     public:
         emit()
             : interval(-1, -1)
             , d_keyword() {}
 
-        emit(size_t start, size_t end, string_type keyword, unsigned index)
+        emit(size_t start, size_t end, string_type keyword, size_t index)
             : interval(start, end)
             , d_keyword(keyword), d_index(index) {}
 
         string_type get_keyword() const { return string_type(d_keyword); }
-        unsigned get_index() const { return d_index; }
+        size_t get_index() const { return d_index; }
         bool is_empty() const { return (get_start() == -1 && get_end() == -1); }
     };
 
@@ -352,7 +352,7 @@ namespace aho_corasick
         typedef std::unique_ptr<state<CharType>> unique_ptr;
         typedef std::basic_string<CharType>      string_type;
         typedef std::basic_string<CharType>   &  string_ref_type;
-        typedef std::pair<string_type, unsigned> key_index;
+        typedef std::pair<string_type, size_t>   key_index;
         typedef std::set<key_index>              string_collection;
         typedef std::vector<ptr>                 state_collection;
         typedef std::vector<CharType>            transition_collection;
@@ -397,7 +397,7 @@ namespace aho_corasick
 
         size_t get_depth() const { return d_depth; }
 
-        void add_emit(string_ref_type keyword, unsigned index)
+        void add_emit(string_ref_type keyword, size_t index)
         {
             d_emits.insert(std::make_pair(keyword, index));
         }
@@ -494,7 +494,7 @@ namespace aho_corasick
         std::unique_ptr<state_type> d_root;
         config                      d_config;
         bool                        d_constructed_failure_states;
-        unsigned                    d_num_keywords = 0;
+        size_t                      d_num_keywords = 0;
 
     public:
         basic_trie() : basic_trie(config()) {}

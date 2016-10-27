@@ -26,7 +26,7 @@ static Instruction Assemble(const std::string & text, int mode = 32, uint64_t ad
             cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
             const uint8_t* data = XEDParse.dest;
             cs_insn* insn = cs_malloc(handle);
-            size_t codeSize = XEDParse.dest_size;
+            size_t codeSize = size_t(XEDParse.dest_size);
             uint64_t addr64 = addr;
             if(cs_disasm_iter(handle, &data, &codeSize, &addr64, insn))
                 result = FromCapstone(insn);
