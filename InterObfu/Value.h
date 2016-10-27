@@ -17,7 +17,7 @@ struct Value
     explicit Value(int64_t val)
         : val(val) { }
 
-    bool operator==(const Value & other) const
+    bool Equals(const Value & other) const
     {
         if(compare)
             return compare(*this, other);
@@ -26,6 +26,8 @@ struct Value
 
         return val == other.val;
     }
+
+    bool operator==(const Value & other) const = delete;
 
     OPNEQ(Value);
 };

@@ -31,19 +31,21 @@ struct Memory
     explicit Memory(Value disp)
         : Memory(Register(), Register(), Value(), disp) { }
 
-    bool operator==(const Memory & other) const
+    bool Equals(const Memory & other) const
     {
         if(compare)
             return compare(*this, other);
         if(other.compare)
             return other.compare(other, *this);
 
-        return seg == other.seg &&
-               base == other.base &&
-               index == other.index &&
-               scale == other.scale &&
-               disp == other.disp;
+        return seg.Equals(other.seg) &&
+               base.Equals(other.base) &&
+               index.Equals(other.index) &&
+               scale.Equals(other.scale) &&
+               disp.Equals(other.disp);
     }
+
+    bool operator==(const Memory & other) const = delete;
 
     OPNEQ(Memory);
 };

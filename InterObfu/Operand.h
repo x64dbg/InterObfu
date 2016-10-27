@@ -46,7 +46,7 @@ struct Operand
         : type(Mem),
           mem(mem) { }
 
-    bool operator==(const Operand & other) const
+    bool Equals(const Operand & other) const
     {
         if(compare)
             return compare(*this, other);
@@ -60,15 +60,17 @@ struct Operand
         case Invalid:
             return true;
         case Reg:
-            return reg == other.reg;
+            return reg.Equals(other.reg);
         case Imm:
-            return imm == other.imm;
+            return imm.Equals(other.imm);
         case Mem:
-            return mem == other.mem;
+            return mem.Equals(other.mem);
         default:
             return false;
         }
     }
+
+    bool operator==(const Operand & other) const = delete;
 
     OPNEQ(Operand);
 };

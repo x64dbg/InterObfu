@@ -24,7 +24,7 @@ struct Pattern
             return -1;
         for(size_t i = start, pos = 0; i < data.size(); i++)
         {
-            if(data[i] == instrs[pos])
+            if(data[i].Equals(instrs[pos]))
             {
                 pos++;
                 if(pos == instrs.size())
@@ -47,7 +47,7 @@ struct Pattern
             return false;
         for(size_t i = start, pos = 0; i < data.size(); i++)
         {
-            if(data[i] == instrs[pos])
+            if(data[i].Equals(instrs[pos]))
             {
                 pos++;
                 if(pos == instrs.size())

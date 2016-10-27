@@ -72,7 +72,7 @@ struct Register
     explicit Register(Registers reg)
         : reg(reg) { }
 
-    bool operator==(const Register & other) const
+    bool Equals(const Register & other) const
     {
         if(compare)
             return compare(*this, other);
@@ -81,6 +81,8 @@ struct Register
 
         return reg == other.reg;
     }
+
+    bool operator==(const Register & other) const = delete;
 
     OPNEQ(Register);
 

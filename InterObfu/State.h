@@ -34,7 +34,7 @@ struct State
 
         bool operator==(const T & other) const
         {
-            return val == other;
+            return val.Equals(other);
         }
 
         OPNEQ(T);

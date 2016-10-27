@@ -28,7 +28,7 @@ void basicTest()
     push300_.operands[0].type = Operand::Imm;
     push300_.operands[0].imm.val = 0x300;
 
-    printf("equal: %d %d %d\n", push300 == push300_, push300 == pushImm, pushImm == push300);
+    printf("equal: %d %d %d\n", push300.Equals(push300_), push300.Equals(pushImm), pushImm.Equals(push300));
 
     //representation of "mov eax, ebx"
     Instruction movReg;
@@ -70,7 +70,7 @@ void basicTest()
 
 void checkEqual(const Instruction & a, const Instruction & b)
 {
-    if(a == b)
+    if(a.Equals(b))
         puts("a == b");
     else
         puts("a != b");
@@ -285,9 +285,11 @@ void testPeephole()
 
 int main()
 {
-    testPeephole();
+    //testPeephole();
     //testAhoCorasick();
-    //matchTest2();
+    basicTest();
+    matchTest();
+    matchTest2();
     //testConverter();
 
     system("pause");

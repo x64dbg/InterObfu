@@ -28,7 +28,7 @@ struct Segment
     explicit Segment(CompareFunction<Segment> compare)
         : seg(INVALID), compare(compare) { }
 
-    bool operator==(const Segment & other) const
+    bool Equals(const Segment & other) const
     {
         if(compare)
             return compare(*this, other);
@@ -37,6 +37,8 @@ struct Segment
 
         return seg == other.seg;
     }
+
+    bool operator==(const Segment & other) const = delete;
 
     OPNEQ(Segment);
 };

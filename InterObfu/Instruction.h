@@ -81,23 +81,25 @@ struct Instruction
         return operands[index];
     }
 
-    bool operator==(const Instruction & other) const
+    bool Equals(const Instruction & other) const
     {
         if(compare)
             return compare(*this, other);
         if(other.compare)
             return other.compare(other, *this);
 
-        if(opcode != other.opcode)
+        if(!opcode.Equals(other.opcode))
             return false;
 
         if(opCount != other.opCount)
             return false;
         for(auto i = 0; i < opCount; i++)
-            if(operands[i] != other.operands[i])
+            if(!operands[i].Equals(other.operands[i]))
                 return false;
         return true;
     }
+
+    bool operator==(const Instruction & other) const = delete;
 
     OPNEQ(Instruction);
 };

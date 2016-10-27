@@ -19,7 +19,7 @@ struct Opcode
     explicit Opcode(Mnemonics mnem)
         : mnem(mnem) { }
 
-    bool operator==(const Opcode & other) const
+    bool Equals(const Opcode & other) const
     {
         if(compare)
             return compare(*this, other);
@@ -28,6 +28,8 @@ struct Opcode
 
         return mnem == other.mnem;
     }
+
+    bool operator==(const Opcode & other) const = delete;
 
     OPNEQ(Opcode);
 };
