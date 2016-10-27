@@ -52,20 +52,20 @@ void basicTest()
 
     Pattern pattern1;
     //push reg2
-    auto pushReg = Instruction(X86_INS_PUSH, Operand(Register(pattern1.state.MakeRegisterN(2))));
+    auto pushReg = Instruction(X86_INS_PUSH, Operand(Register(State::MakeRegisterN(2))));
     pattern1.Add(pushReg);
     //mov [memory1], 0x3
-    auto movMemImm1 = Instruction(X86_INS_MOV, Operand(Memory(pattern1.state.MakeMemoryN(1))), Operand(Value(3)));
+    auto movMemImm1 = Instruction(X86_INS_MOV, Operand(Memory(State::MakeMemoryN(1))), Operand(Value(3)));
     pattern1.Add(movMemImm1);
 
     Pattern pattern2;
     //mov [base1 + index2 * 1 + 0], imm1
-    auto base1 = Register(pattern2.state.MakeRegisterN(1));
-    auto index2 = Register(pattern2.state.MakeRegisterN(2));
-    auto movMemImm2 = Instruction(X86_INS_MOV, Operand(Memory(base1, index2, Value(1), Value(0))), Operand(Value(pattern2.state.MakeValueN(1))));
+    auto base1 = Register(State::MakeRegisterN(1));
+    auto index2 = Register(State::MakeRegisterN(2));
+    auto movMemImm2 = Instruction(X86_INS_MOV, Operand(Memory(base1, index2, Value(1), Value(0))), Operand(Value(State::MakeValueN(1))));
     pattern2.Add(movMemImm2);
     //xor reg1, reg2
-    auto xorRegReg = Instruction(X86_INS_XOR, Operand(Register(pattern2.state.MakeRegisterN(1))), Operand(Register(pattern2.state.MakeRegisterN(2))));
+    auto xorRegReg = Instruction(X86_INS_XOR, Operand(Register(State::MakeRegisterN(1))), Operand(Register(State::MakeRegisterN(2))));
     pattern2.Add(xorRegReg);
 }
 
@@ -89,8 +89,8 @@ void matchTest2()
     ins1.push_back(Assemble("nop"));
 
     Pattern pat1;
-    pat1.Add(Instruction(X86_INS_PUSH, Operand(Register(pat1.state.MakeRegisterN(1))))); //push reg1
-    pat1.Add(Instruction(X86_INS_POP, Operand(Register(pat1.state.MakeRegisterN(2))))); //pop reg2
+    pat1.Add(Instruction(X86_INS_PUSH, Operand(Register(State::MakeRegisterN(1))))); //push reg1
+    pat1.Add(Instruction(X86_INS_POP, Operand(Register(State::MakeRegisterN(2))))); //pop reg2
     printf("match1: %lld\n", pat1.Search(ins1));
 
     std::vector<Instruction> ins2;
@@ -101,8 +101,8 @@ void matchTest2()
     ins2.push_back(Assemble("nop"));
 
     Pattern pat2;
-    pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(pat2.state.MakeRegisterN(1))))); //push reg1
-    pat2.Add(Instruction(X86_INS_POP, Operand(Register(pat2.state.MakeRegisterN(1))))); //pop reg1
+    pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(State::MakeRegisterN(1))))); //push reg1
+    pat2.Add(Instruction(X86_INS_POP, Operand(Register(State::MakeRegisterN(1))))); //pop reg1
     printf("match2: %lld\n", pat2.Search(ins2));
 
     std::vector<Instruction> ins3;
@@ -110,8 +110,8 @@ void matchTest2()
     ins3.push_back(Assemble("mov ecx, dword ptr ds:[eax+ebx*2]"));
 
     Pattern pat3;
-    pat3.Add(Instruction(X86_INS_MOV, Operand(Memory(pat3.state.MakeMemoryN(1))), Operand(pat3.state.MakeOperandN(1)))); //mov memory1, op1
-    pat3.Add(Instruction(X86_INS_MOV, Operand(pat3.state.MakeOperandN(1)), Operand(Memory(pat3.state.MakeMemoryN(1))))); //mov op1, memory1
+    pat3.Add(Instruction(X86_INS_MOV, Operand(Memory(State::MakeMemoryN(1))), Operand(State::MakeOperandN(1)))); //mov memory1, op1
+    pat3.Add(Instruction(X86_INS_MOV, Operand(State::MakeOperandN(1)), Operand(Memory(State::MakeMemoryN(1))))); //mov op1, memory1
     printf("match3: %lld\n", pat3.Search(ins3));
 }
 
@@ -122,12 +122,12 @@ void matchTest()
 
     State s;
     //mov reg1, reg2
-    auto movReg1Reg2 = Instruction(X86_INS_MOV, Operand(Register(s.MakeRegisterN(1))), Operand(Register(s.MakeRegisterN(2))));
+    auto movReg1Reg2 = Instruction(X86_INS_MOV, Operand(Register(State::MakeRegisterN(1))), Operand(Register(State::MakeRegisterN(2))));
     checkEqual(movEaxEbx, movReg1Reg2);
     s.Clear();
 
     //mov reg1, reg1
-    auto movReg1Reg1 = Instruction(X86_INS_MOV, Operand(Register(s.MakeRegisterN(1))), Operand(Register(s.MakeRegisterN(1))));
+    auto movReg1Reg1 = Instruction(X86_INS_MOV, Operand(Register(State::MakeRegisterN(1))), Operand(Register(State::MakeRegisterN(1))));
     checkEqual(movEaxEbx, movReg1Reg1);
     s.Clear();
 
@@ -256,12 +256,12 @@ void testPeephole()
     std::vector<Pattern> patterns;
 
     Pattern pat1;
-    pat1.Add("shl eax, 0");
+    pat1.Add(Instruction(X86_INS_SHL, Operand(Register(State::MakeRegisterN(1))), Operand(Value(0))));
     patterns.push_back(pat1);
 
     Pattern pat2;
-    pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(pat2.state.MakeRegisterN(1)))));
-    pat2.Add(Instruction(X86_INS_POP, Operand(Register(pat2.state.MakeRegisterN(1)))));
+    pat2.Add(Instruction(X86_INS_PUSH, Operand(Register(State::MakeRegisterN(1)))));
+    pat2.Add(Instruction(X86_INS_POP, Operand(Register(State::MakeRegisterN(1)))));
     patterns.push_back(pat2);
 
     Converter::init();
