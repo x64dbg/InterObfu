@@ -26,10 +26,10 @@ public:
         if(results.empty()) //no patterns found = not optimized
             return false;
 
-        puts("results (unfiltered):");
+        /*puts("results (unfiltered):");
         for(auto & r : results)
             printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), prettyPrint(r.get_keyword()).c_str());
-        puts("");
+        puts("");*/
 
         //This creates a map from (match start) -> (result index).
         //Before considering a result it is checked with a predicate.
@@ -80,13 +80,13 @@ public:
         if(best.empty()) //no patterns found = not optimized
             return false;
 
-        puts("results (filtered):");
+        /*puts("results (filtered):");
         for(const auto & it : best)
         {
             const auto & r = results[it.second];
             printf("%u:%d-%d \"%s\"\n", r.get_index(), int(r.get_start()), int(r.get_end()), prettyPrint(r.get_keyword()).c_str());
         }
-        puts("");
+        puts("");*/
 
         //Construct the output in O(i) with i = in.size()
         //TODO: if patterns overlap the first is taken and the overlaps are ignored

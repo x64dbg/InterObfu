@@ -264,6 +264,7 @@ void testPeephole()
                              Operand(Register(State::MakeRegisterN(1))),
                              Operand(Value(0))));
         patterns.push_back(pat1);
+        puts("pattern 1:\n shl reg1, 0\n");
     }
 
     {
@@ -273,6 +274,7 @@ void testPeephole()
         pat2.Add(Instruction(X86_INS_POP,
                              Operand(Register(State::MakeRegisterN(1)))));
         patterns.push_back(pat2);
+        puts("pattern 2:\n push reg1\n pop reg1\n");
     }
 
     {
@@ -288,6 +290,8 @@ void testPeephole()
                                Operand(state.registers[1]()));
         });
         patterns.push_back(pat3);
+        puts("pattern 3:\n push reg1\n pop reg2");
+        puts("replace 3:\n mov reg2, reg1\n");
     }
 
     {
@@ -308,6 +312,8 @@ void testPeephole()
             return Instruction(X86_INS_XOR, Operand(state.registers[1]()), Operand(state.registers[2]()));
         });
         patterns.push_back(pat4);
+        puts("pattern 4:\n push reg1\n xor [esp], reg2\n pop reg1");
+        puts("replace 4:\n xor reg1, reg2\n");
     }
 
     Converter::init();
@@ -315,10 +321,9 @@ void testPeephole()
     const auto MaxPasses = 1000;
     auto printInstrs = [](const std::vector<Instruction> & instrs)
     {
-        puts("========");
         for(auto & instr : instrs)
-            puts(instr.ToString().c_str());
-        puts("========");
+            printf(" %s\n", instr.ToString().c_str());
+        puts("");
     };
     puts("input:");
     printInstrs(ins1);
@@ -331,8 +336,8 @@ void testPeephole()
         printf("pass %d:\n", i + 1);
         printInstrs(ins1);
     }
-    puts("output:");
-    printInstrs(ins1);
+    /*puts("output:");
+    printInstrs(ins1);*/
 }
 
 int main()
