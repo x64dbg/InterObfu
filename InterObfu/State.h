@@ -5,6 +5,9 @@
 #include "Value.h"
 #include "Register.h"
 
+// Forward declarations
+struct Operand;
+
 template<typename T>
 static bool Wildcard(const T &, const T &, State &)
 {
@@ -92,15 +95,9 @@ struct State
         return Wildcard<Value>;
     }
 
-    static CompareFunction<Operand> MakeOperandN(int index)
+    static int MakeOperandN(int index)  // Return int instead of function for now
     {
-        return [index](const Operand & aThis, const Operand & bOther, State & state)
-        {
-            if(state.operands[index]) //already matched before
-                return state.operands[index].Equals(bOther, state);
-            state.operands[index] = bOther;
-            return true;
-        };
+        return index;  // Simplified version
     }
 
     static CompareFunction<Register> MakeRegisterN(int index)

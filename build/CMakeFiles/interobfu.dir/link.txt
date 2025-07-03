@@ -1,0 +1,2 @@
+/usr/bin/ar qc libinterobfu.a CMakeFiles/interobfu.dir/InterObfu/Convert.cpp.o CMakeFiles/interobfu.dir/InterObfu/ToString.cpp.o
+/usr/bin/ranlib libinterobfu.a
