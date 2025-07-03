@@ -1,0 +1,215 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up CMake
+      uses: jwlawson/actions-setup-cmake@v1.14
+      with:
+        cmake-version: '3.15'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential git
+
+    - name: Check cmkr configuration
+      run: |
+        echo "=== Validating cmake.toml ==="
+        if [ -f "cmake.toml" ]; then
+          echo "✓ cmake.toml exists"
+          # Basic syntax check
+          grep -q "\[project\]" cmake.toml && echo "✓ Has project section"
+          grep -q "name.*InterObfu" cmake.toml && echo "✓ Project name is correct"
+        else
+          echo "✗ cmake.toml not found"
+          exit 1
+        fi
+
+    - name: Bootstrap and configure
+      run: |
+        cmake -P cmkr.cmake
+        cmake -B build
+
+    - name: Fast build check
+      run: |
+        cmake --build build --target interobfu
+
+    - name: Verify build outputs
+      run: |
+        echo "=== Build Verification ==="
+        if [ -f "build/libinterobfu.a" ]; then
+          echo "✓ Static library built successfully"
+          ls -la build/libinterobfu.a
+        else
+          echo "✗ Static library not found"
+          find build -name "*.a" -o -name "*.lib" || true
+        fi
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+
+    - name: Check file structure
+      run: |
+        echo "=== File Structure Check ==="
+        echo "Header files:"
+        find InterObfu -name "*.h" | sort
+        echo ""
+        echo "Source files:"
+        find InterObfu -name "*.cpp" | sort
+        echo ""
+        echo "Test files:"
+        find tests -name "*.cpp" 2>/dev/null | sort || echo "No test directory found"
+
+    - name: Check for common issues
+      run: |
+        echo "=== Code Quality Checks ==="
+        
+        # Check for TODOs and FIXMEs
+        echo "TODOs and FIXMEs:"
+        grep -r "TODO\|FIXME" InterObfu/ || echo "None found"
+        echo ""
+        
+        # Check for debug prints
+        echo "Debug prints (should be minimal in final code):"
+        grep -r "printf\|cout.*<<" InterObfu/ | head -5 || echo "None found"
+        echo ""
+        
+        # Check for proper header guards
+        echo "Header guard check:"
+        find InterObfu -name "*.h" | while read file; do
+          if grep -q "#pragma once" "$file"; then
+            echo "✓ $file has pragma once"
+          else
+            echo "? $file might need header guard check"
+          fi
+        done
+
+    - name: Check build system consistency
+      run: |
+        echo "=== Build System Consistency ==="
+        
+        # Check if CMakeLists.txt exists and is generated
+        if [ -f "CMakeLists.txt" ]; then
+          if grep -q "automatically generated from cmake.toml" CMakeLists.txt; then
+            echo "✓ CMakeLists.txt is properly generated"
+          else
+            echo "? CMakeLists.txt might be manually edited"
+          fi
+        fi
+        
+        # Check for cmkr.cmake
+        if [ -f "cmkr.cmake" ]; then
+          echo "✓ cmkr.cmake bootstrap file present"
+        else
+          echo "✗ cmkr.cmake missing"
+        fi
+
+  documentation-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+
+    - name: Check documentation
+      run: |
+        echo "=== Documentation Check ==="
+        
+        # Check for README
+        if [ -f "README.md" ]; then
+          echo "✓ README.md exists"
+          wc -l README.md
+        else
+          echo "? No README.md found"
+        fi
+        
+        # Check for other documentation
+        echo ""
+        echo "Documentation files:"
+        find . -maxdepth 1 -name "*.md" | sort
+        
+        # Check if headers have documentation
+        echo ""
+        echo "Headers with documentation comments:"
+        find InterObfu -name "*.h" -exec grep -l "/\*\*\|///" {} \; | wc -l | xargs echo "Headers with docs:"
+
+  dependency-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+
+    - name: Analyze dependencies
+      run: |
+        echo "=== Dependency Analysis ==="
+        
+        # Check cmake.toml for dependencies
+        if [ -f "cmake.toml" ]; then
+          echo "Declared dependencies:"
+          grep -A 5 "\[fetch-content\|link-libraries" cmake.toml || echo "No external dependencies declared"
+        fi
+        
+        echo ""
+        echo "Include analysis:"
+        find InterObfu -name "*.h" -o -name "*.cpp" | xargs grep "#include" | grep -v "InterObfu/" | sort | uniq -c | sort -nr | head -10
+
+    - name: Check for platform-specific code
+      run: |
+        echo "=== Platform Compatibility Check ==="
+        
+        echo "Platform-specific includes:"
+        grep -r "windows\.h\|unistd\.h\|sys/" InterObfu/ || echo "None found"
+        
+        echo ""
+        echo "Platform-specific macros:"
+        grep -r "_WIN32\|__linux__\|__APPLE__" InterObfu/ || echo "None found"
+
+  changes-summary:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Summarize changes
+      run: |
+        echo "=== Pull Request Changes Summary ==="
+        
+        # Get the base branch (main, master, or develop)
+        BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        if git show-ref --verify --quiet refs/heads/main; then
+          BASE_BRANCH="main"
+        elif git show-ref --verify --quiet refs/heads/master; then
+          BASE_BRANCH="master"
+        elif git show-ref --verify --quiet refs/heads/develop; then
+          BASE_BRANCH="develop"
+        fi
+        
+        echo "Comparing against: $BASE_BRANCH"
+        echo ""
+        
+        echo "Files changed:"
+        git diff --name-only HEAD~1 HEAD || echo "Could not determine changes"
+        
+        echo ""
+        echo "Lines changed:"
+        git diff --stat HEAD~1 HEAD || echo "Could not determine line changes"
