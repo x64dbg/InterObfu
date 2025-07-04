@@ -4,7 +4,7 @@
 std::string Value::ToString() const
 {
     char value[31] = "";
-    sprintf_s(value, "0x%llX", val);
+    sprintf_s(value, sizeof(value), "0x%llX", val);
     return value;
 }
 

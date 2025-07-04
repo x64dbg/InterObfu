@@ -1,0 +1,8 @@
+/workspace/build/CMakeFiles/interobfu.dir
+/workspace/build/CMakeFiles/interobfu_demo.dir
+/workspace/build/CMakeFiles/interobfu_tests.dir
+/workspace/build/CMakeFiles/edit_cache.dir
+/workspace/build/CMakeFiles/rebuild_cache.dir
+/workspace/build/_deps/capstone-build/CMakeFiles/capstone.dir
+/workspace/build/_deps/capstone-build/CMakeFiles/edit_cache.dir
+/workspace/build/_deps/capstone-build/CMakeFiles/rebuild_cache.dir

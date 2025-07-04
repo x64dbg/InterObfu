@@ -1,0 +1,77 @@
+[project]
+name = "InterObfu"
+version = "1.0.0"
+description = "Intermediate x86 instruction representation for use in obfuscation/deobfuscation"
+
+[conditions]
+windows = "WIN32"
+linux = "UNIX AND NOT APPLE"
+macos = "APPLE"
+
+[variables]
+CMAKE_CXX_STANDARD = "17"
+CMAKE_CXX_STANDARD_REQUIRED = "ON"
+CMAKE_POSITION_INDEPENDENT_CODE = "ON"
+
+# Capstone settings
+CAPSTONE_BUILD_SHARED = "OFF"
+CAPSTONE_BUILD_STATIC = "ON" 
+CAPSTONE_BUILD_TESTS = "OFF"
+CAPSTONE_BUILD_CSTOOL = "OFF"
+CAPSTONE_INSTALL = "OFF"
+CAPSTONE_X86_SUPPORT = "ON"
+CAPSTONE_ARM_SUPPORT = "OFF"
+CAPSTONE_ARM64_SUPPORT = "OFF"
+CAPSTONE_MIPS_SUPPORT = "OFF"
+CAPSTONE_PPC_SUPPORT = "OFF"
+CAPSTONE_SPARC_SUPPORT = "OFF"
+CAPSTONE_SYSZ_SUPPORT = "OFF"
+CAPSTONE_XCORE_SUPPORT = "OFF"
+CAPSTONE_M68K_SUPPORT = "OFF"
+CAPSTONE_TMS320C64X_SUPPORT = "OFF"
+CAPSTONE_M680X_SUPPORT = "OFF"
+CAPSTONE_EVM_SUPPORT = "OFF"
+
+[fetch-content.capstone]
+git = "https://github.com/capstone-engine/capstone.git"
+tag = "5.0.1"
+
+# Main InterObfu library
+[target.interobfu]
+type = "static"
+sources = [
+    "InterObfu/Convert.cpp",
+    "InterObfu/ToString.cpp"
+]
+headers = [
+    "InterObfu/*.h"
+]
+include-directories = [
+    "InterObfu",
+    "InterObfu/XEDParse", 
+    "InterObfu/capstone_wrapper"
+]
+compile-features = ["cxx_std_17"]
+link-libraries = ["capstone"]
+
+[target.interobfu.properties]
+POSITION_INDEPENDENT_CODE = true
+
+# Main executable (current main.cpp)
+[target.interobfu_demo]
+type = "executable"
+sources = ["InterObfu/main.cpp"]
+link-libraries = ["interobfu", "capstone"]
+include-directories = ["InterObfu"]
+
+# Test executable (simplified version without assembly dependencies)
+[target.interobfu_tests]
+type = "executable"
+sources = [
+    "tests/test_main_simple.cpp"
+]
+link-libraries = ["interobfu"]
+include-directories = [
+    "InterObfu",
+    "tests"
+]

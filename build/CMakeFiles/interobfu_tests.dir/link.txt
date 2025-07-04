@@ -1,0 +1,1 @@
+/usr/bin/c++ -Xlinker --dependency-file=CMakeFiles/interobfu_tests.dir/link.d CMakeFiles/interobfu_tests.dir/tests/test_main_simple.cpp.o -o interobfu_tests  libinterobfu.a _deps/capstone-build/libcapstone.a

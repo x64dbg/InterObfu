@@ -5,3 +5,20 @@ x64/
 Win32/
 Release/
 Debug/
+
+# CMake/cmkr build directories
+build*/
+*build*/
+
+# IDE files
+.vscode/
+.vs/
+*.user
+
+# Generated files
+CMakeLists.txt.user
+cmake-build-*/
+
+# Temporary files
+*.tmp
+*.log

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/CMakeFiles/capstone-populate"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/CMakeFiles/capstone-populate.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/CMakeFiles/capstone-populate-complete.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-build.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-configure.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-download.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-install.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-mkdir.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-patch.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-test.rule"
+		},
+		{
+			"file" : "/workspace/build/_deps/capstone-subbuild/capstone-populate-prefix/src/capstone-populate-stamp/capstone-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"capstone-populate"
+		],
+		"name" : "capstone-populate"
+	}
+}

@@ -2,6 +2,8 @@
 
 #include "Utils.h"
 #include "Segment.h"
+#include "Register.h"
+#include "Value.h"
 
 struct Memory
 {
